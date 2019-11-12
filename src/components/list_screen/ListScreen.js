@@ -4,11 +4,12 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import ItemsList from './ItemsList.js'
 import { firestoreConnect } from 'react-redux-firebase';
+import { getFirestore } from 'redux-firestore';
 
 class ListScreen extends Component {
     state = {
-        name: this.todoList.name,
-        owner: this.todoList.owner,
+        name: this.props.todoList.name,
+        owner: this.props.todoList.owner,
         last_updated:'',
     }
 
@@ -21,7 +22,10 @@ class ListScreen extends Component {
         this.setState(() => ({
             last_updated: new Date().getTime()
         }));
-        console.log(this.state);
+        let firestore = getFirestore();
+        let currentList = firestore.collection("todoLists").doc(this.props.todoList.id);
+        currentList.update({[target.id]:target.value});
+        currentList.update({last_updated:this.state.last_updated});
     }
 
     render() {

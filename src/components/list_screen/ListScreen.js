@@ -7,17 +7,21 @@ import { firestoreConnect } from 'react-redux-firebase';
 
 class ListScreen extends Component {
     state = {
-        name: '',
-        owner: '',
+        name: this.todoList.name,
+        owner: this.todoList.owner,
+        last_updated:'',
     }
 
     handleChange = (e) => {
         const { target } = e;
-
         this.setState(state => ({
             ...state,
             [target.id]: target.value,
         }));
+        this.setState(() => ({
+            last_updated: new Date().getTime()
+        }));
+        console.log(this.state);
     }
 
     render() {
@@ -45,16 +49,16 @@ class ListScreen extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const { id } = ownProps.match.params;
-  const { todoLists } = state.firestore.data;
-  const todoList = todoLists ? todoLists[id] : null;
-  todoList.id = id;
-
-  return {
-    todoList,
-    auth: state.firebase.auth,
+    const { id } = ownProps.match.params;
+    const { todoLists } = state.firestore.data;
+    const todoList = todoLists ? todoLists[id] : null;
+    todoList.id = id;
+  
+    return {
+      todoList,
+      auth: state.firebase.auth,
+    };
   };
-};
 
 export default compose(
   connect(mapStateToProps),

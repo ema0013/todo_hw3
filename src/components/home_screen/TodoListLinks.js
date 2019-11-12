@@ -6,6 +6,13 @@ import TodoListCard from './TodoListCard';
 
 class TodoListLinks extends React.Component {
     render() {
+        if(!this.props.todoLists){
+            return(
+                <div className="todo-lists section">
+                </div>
+            );
+        }
+        this.props.todoLists.sort(this.compare);
         const todoLists = this.props.todoLists;
         console.log(todoLists);
         return (
@@ -17,6 +24,20 @@ class TodoListLinks extends React.Component {
                 ))}
             </div>
         );
+    }
+
+    compare = (list1,list2) =>{
+        let stamp1 = list1.last_updated;
+        let stamp2 = list2.last_updated;
+        if(stamp1 > stamp2){
+            return -1;
+        }
+        else if (stamp1 === stamp2){
+            return 0;
+        }
+        else{
+            return 1;
+        }
     }
 }
 

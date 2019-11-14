@@ -12,7 +12,7 @@ class ItemScreen extends Component{
         assigned_to:this.props.currItem ? this.props.currItem.assigned_to : "",
         due_date:this.props.currItem ? this.props.currItem.due_date : "",
         completed:this.props.currItem ? this.props.currItem.completed : false,
-        key:this.props.key
+        key:this.props.itemKey
     }
 
     handleChange = (e) =>{
@@ -47,7 +47,6 @@ class ItemScreen extends Component{
 
     render() {
         const auth = this.props.auth;
-        const currItem = this.props.currItem;
         if (!auth.uid) {
             return <Redirect to="/" />;
         }
@@ -78,8 +77,8 @@ class ItemScreen extends Component{
                             </div>
                         </div>
                         <div className="col s12">
-                            <div className="btn pink lighten-1 z-depth-0" onClick={this.submitChanges}>Submit</div>
-                            <div className="btn pink lighten-1 z-depth-0">Cancel</div>
+                            <Link className="btn pink lighten-1 z-depth-0" onClick={this.submitChanges} to={'/todoList/'+this.props.id}>Submit</Link>
+                            <Link className="btn pink lighten-1 z-depth-0" to={'/todoList/'+this.props.id}>Cancel</Link>
                         </div>
                     </form>
                 </div>
@@ -99,7 +98,7 @@ const mapStateToProps = (state,ownProps) =>{
     return{
         id:id,
         currItem:currItem,
-        key:key,
+        itemKey:key,
         auth: state.firebase.auth
     }
 }

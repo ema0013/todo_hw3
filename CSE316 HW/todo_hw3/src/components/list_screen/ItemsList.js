@@ -14,7 +14,7 @@ class ItemsList extends React.Component {
                 {items && items.map(function(item) {
                     item.id = item.key;
                     return (
-                        <ItemCard todoList={todoList} item={item} />
+                        <ItemCard todoList={todoList} item={item} id={todoList.id}/>
                     );})
                 }
             </div>

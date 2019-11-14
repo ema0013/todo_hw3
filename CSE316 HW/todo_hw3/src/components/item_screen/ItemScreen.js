@@ -30,6 +30,25 @@ class ItemScreen extends Component{
     submitChanges = () =>{
         let firestore = getFirestore();
         if(this.props.currItem){
+            let currentList = firestore.collection("todoLists").doc(this.props.id);
+            currentList.update({
+                items: firebase.firestore.FieldValue.arrayRemove({
+                    description:this.props.currItem.description,
+                    assigned_to:this.props.currItem.assigned_to,
+                    due_date:this.props.currItem.due_date,
+                    completed:this.props.currItem.completed,
+                    key:this.props.currItem.key,
+                })
+            });
+            const newList = currentList.update({
+                items: firebase.firestore.FieldValue.arrayUnion({
+                    description:this.state.description,
+                    assigned_to:this.state.assigned_to,
+                    due_date:this.state.due_date,
+                    completed:this.state.completed,
+                    key:this.state.key,
+                })
+            });
 
         }else{
             let currentList = firestore.collection("todoLists").doc(this.props.id);
@@ -56,11 +75,11 @@ class ItemScreen extends Component{
                     <form className="col s12">
                         <div className="row">
                             <div className="input-field col s6">
-                                <input value={this.state.name} id="description" type="text" className="validate" onChange={this.handleChange}/>
+                                <input value={this.state.description} id="description" type="text" className="validate" onChange={this.handleChange}/>
                                 <label className="active" for="description">Description:</label>
                             </div>
                             <div className="input-field col s6">
-                                <input id="assigned_to" value={this.state.owner} type="text" className="validate" onChange={this.handleChange}/>
+                                <input id="assigned_to" value={this.state.assigned_to} type="text" className="validate" onChange={this.handleChange}/>
                                 <label className="active" for="assigned_to">Assigned To:</label>
                             </div>
                         </div>
@@ -95,6 +114,7 @@ const mapStateToProps = (state,ownProps) =>{
     const items = todoList ? todoList.items : null;
     const key = params.key;
     var currItem = items ? (key === items.length ? null :items[key] ): null;
+    console.log(currItem);
     return{
         id:id,
         currItem:currItem,

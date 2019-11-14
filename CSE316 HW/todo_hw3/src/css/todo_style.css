@@ -48,3 +48,7 @@ div.banner {
 .card-assigned-to{
   font-size:15px;
 }
+
+#completed{
+  opacity:1;
+}

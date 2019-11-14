@@ -81,7 +81,7 @@ class ListScreen extends Component {
                     </div>
                 </div>
                 <div className="center-align">
-                    <Link className="btn-floating btn-large waves-effect waves-light pink lighten-4" to={"/itemScreen/"+todoList.id+"/"+(todoList.items.length)}>
+                    <Link className="btn-floating btn-large waves-effect waves-light pink lighten-4" to={"/itemScreen/"+todoList.id+"/"+(todoList.items.length)} params={{id:todoList.id, index:todoList.items.length}}>
                         <i className="material-icons">add_circle_outline</i>
                     </Link>
                 </div>

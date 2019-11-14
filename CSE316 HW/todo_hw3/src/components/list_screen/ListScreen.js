@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom'
+import { Redirect,Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import ItemsList from './ItemsList.js'
@@ -35,6 +35,12 @@ class ListScreen extends Component {
         instances[0].open();
     }
 
+    deleteList = () =>{
+        let firestore = getFirestore();
+        let currentList = firestore.collection("todoLists").doc(this.props.todoList.id);
+        currentList.delete();
+    }
+
     render() {
         const auth = this.props.auth;
         const todoList = this.props.todoList;
@@ -44,8 +50,10 @@ class ListScreen extends Component {
         return (
             <div className="container white">
                 <h5 className="grey-text text-darken-3">
-                    Todo List                                 
-                <button data-target="modal1" className="btn modal-trigger right-align" onClick={this.initModal}>&#128465;</button>
+                    Todo List
+                    <button data-target="modal1" className="btn modal-trigger right red darken-4 btn-large" onClick={this.initModal}>
+                        <i className="large material-icons">delete_forever</i>
+                    </button>                                 
                 </h5>
                 
                 <div className="input-field">
@@ -64,11 +72,12 @@ class ListScreen extends Component {
                 <ItemsList todoList={todoList} />
                 <div id="modal1" className="modal">
                     <div className="modal-content">
-                    <h4>Modal Header</h4>
-                    <p>A bunch of text</p>
+                    <h4>Delete Current List</h4>
+                    <p>Are you sure you want to delete the current list?</p>
                     </div>
                     <div className="modal-footer">
-                    <a href="#!" className="modal-close waves-effect waves-green btn-flat">Agree</a>
+                    <Link className="modal-close waves-effect waves-red btn-flat" to="/" onClick={this.deleteList}>Yes</Link>
+                    <a href="#!" className="modal-close waves-effect waves-green btn-flat">No</a>
                     </div>
                 </div>
             </div>

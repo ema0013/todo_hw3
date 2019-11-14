@@ -80,6 +80,12 @@ class ListScreen extends Component {
                     <a href="#!" className="modal-close waves-effect waves-green btn-flat">No</a>
                     </div>
                 </div>
+                <div className="center-align">
+                    <Link className="btn-floating btn-large waves-effect waves-light pink lighten-4" to={"/itemScreen/"+todoList.id+"/"+(todoList.items.length)}>
+                        <i className="material-icons">add_circle_outline</i>
+                    </Link>
+                </div>
+                
             </div>
         );
     }

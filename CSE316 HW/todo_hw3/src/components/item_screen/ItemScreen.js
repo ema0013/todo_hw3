@@ -4,18 +4,50 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { getFirestore } from 'redux-firestore';
+import * as firebase from 'firebase';
 
 class ItemScreen extends Component{
     state = {
-        name:'',
-        owner:'',
-        due_date:'',
-        completed:'',
+        description: this.props.currItem ? this.props.currItem.description : "",
+        assigned_to:this.props.currItem ? this.props.currItem.assigned_to : "",
+        due_date:this.props.currItem ? this.props.currItem.due_date : "",
+        completed:this.props.currItem ? this.props.currItem.completed : false,
+        key:this.props.key
+    }
+
+    handleChange = (e) =>{
+        const {target} = e;
+        target.id === 'completed' ? this.setState(state=>({
+            ...state,
+            [target.id]: target.checked,
+        })):
+        this.setState(state => ({
+            ...state,
+            [target.id]: target.value,
+        }));
+    }
+
+    submitChanges = () =>{
+        let firestore = getFirestore();
+        if(this.props.currItem){
+
+        }else{
+            let currentList = firestore.collection("todoLists").doc(this.props.id);
+            const newList = currentList.update({
+                items: firebase.firestore.FieldValue.arrayUnion({
+                    description:this.state.description,
+                    assigned_to:this.state.assigned_to,
+                    due_date:this.state.due_date,
+                    completed:this.state.completed,
+                    key:this.state.key,
+                })
+            });
+        }
     }
 
     render() {
         const auth = this.props.auth;
-        const todoList = this.props.todoList;
+        const currItem = this.props.currItem;
         if (!auth.uid) {
             return <Redirect to="/" />;
         }
@@ -25,28 +57,28 @@ class ItemScreen extends Component{
                     <form className="col s12">
                         <div className="row">
                             <div className="input-field col s6">
-                                <input placeholder="Placeholder" id="name" type="text" className="validate"/>
-                                <label className="active" for="name">Name</label>
+                                <input value={this.state.name} id="description" type="text" className="validate" onChange={this.handleChange}/>
+                                <label className="active" for="description">Description:</label>
                             </div>
                             <div className="input-field col s6">
-                                <input id="owner" type="text" className="validate"/>
-                                <label className="active" for="owner">Owner</label>
+                                <input id="assigned_to" value={this.state.owner} type="text" className="validate" onChange={this.handleChange}/>
+                                <label className="active" for="assigned_to">Assigned To:</label>
                             </div>
                         </div>
                         <div className="row">
                             <div className="input-field col s12">
-                                <input id="due_date" type="date" className="validate"/>
-                                <label className="active" for="due_date">Due Date</label>
+                                <input id="due_date" value={this.state.due_date} type="date" className="validate" onChange={this.handleChange}/>
+                                <label className="active" for="due_date">Due Date:</label>
                             </div>
                         </div>
                         <div className="row">
                             <div className="input-field col s12">
                                 <label for="completed" className="active">Completed: </label>
-                                <input  className="filled-in" type="checkbox" id="completed" />
+                                <input className="filled-in" type="checkbox" id="completed" checked={this.state.completed} onChange={this.handleChange}/>
                             </div>
                         </div>
                         <div className="col s12">
-                            <div className="btn pink lighten-1 z-depth-0">Submit</div>
+                            <div className="btn pink lighten-1 z-depth-0" onClick={this.submitChanges}>Submit</div>
                             <div className="btn pink lighten-1 z-depth-0">Cancel</div>
                         </div>
                     </form>
@@ -63,11 +95,10 @@ const mapStateToProps = (state,ownProps) =>{
     const todoList = todoLists ? todoLists[id] : null;
     const items = todoList ? todoList.items : null;
     const key = params.key;
-    var currItem = items ? (key === items.length ? {name:"",owner:"",due_date:"",completed:false} :items[key] ): null;
-    console.log(currItem);
+    var currItem = items ? (key === items.length ? null :items[key] ): null;
     return{
-        todoList:todoList,
         id:id,
+        currItem:currItem,
         key:key,
         auth: state.firebase.auth
     }

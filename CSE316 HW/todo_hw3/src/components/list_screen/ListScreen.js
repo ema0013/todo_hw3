@@ -34,6 +34,9 @@ class ListScreen extends Component {
         if (!auth.uid) {
             return <Redirect to="/" />;
         }
+        let firestore = getFirestore();
+        let currentList = firestore.collection("todoLists").doc(this.props.todoList.id);
+        currentList.update({last_updated:new Date().getTime()});
         return (
             <div className="container white">
                 <h5 className="grey-text text-darken-3">Todo List</h5>

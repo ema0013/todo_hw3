@@ -48,11 +48,8 @@ class ItemScreen extends Component{
                 key:this.state.key,
             });
         }
-        const list = currentList.set({
+        const list = currentList.update({
             items:newList,
-            name:this.props.todoList.name,
-            owner:this.props.todoList.owner,
-            last_updated:new Date().getTime(),
         });
     }
 

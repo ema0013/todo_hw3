@@ -65,9 +65,9 @@ class ListScreen extends Component {
                     <input type="text" name="owner" id="owner" onChange={this.handleChange} value={todoList.owner} />
                 </div>
                 <div className="header yellow darken-2 row">
-                    <div className="col s4">Task</div>
-                    <div className="col s3">Due Date</div>
-                    <div className="col s3">Status</div>
+                    <div className="col s4 hoverable">Task</div>
+                    <div className="col s3 hoverable">Due Date</div>
+                    <div className="col s3 hoverable">Status</div>
                 </div>
                 <ItemsList todoList={todoList} />
                 <div id="modal1" className="modal">

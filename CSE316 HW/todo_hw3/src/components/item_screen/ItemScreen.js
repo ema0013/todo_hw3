@@ -29,39 +29,31 @@ class ItemScreen extends Component{
 
     submitChanges = () =>{
         let firestore = getFirestore();
+        let currentList = firestore.collection("todoLists").doc(this.props.id);
+        let newList = this.props.todoList.items;
         if(this.props.currItem){
-            let currentList = firestore.collection("todoLists").doc(this.props.id);
-            currentList.update({
-                items: firebase.firestore.FieldValue.arrayRemove({
-                    description:this.props.currItem.description,
-                    assigned_to:this.props.currItem.assigned_to,
-                    due_date:this.props.currItem.due_date,
-                    completed:this.props.currItem.completed,
-                    key:this.props.currItem.key,
-                })
-            });
-            const newList = currentList.update({
-                items: firebase.firestore.FieldValue.arrayUnion({
-                    description:this.state.description,
-                    assigned_to:this.state.assigned_to,
-                    due_date:this.state.due_date,
-                    completed:this.state.completed,
-                    key:this.state.key,
-                })
-            });
-
+            newList[newList.indexOf(this.props.currItem)] = {
+                description:this.state.description,
+                assigned_to:this.state.assigned_to,
+                due_date:this.state.due_date,
+                completed:this.state.completed,
+                key:this.state.key,
+            }
         }else{
-            let currentList = firestore.collection("todoLists").doc(this.props.id);
-            const newList = currentList.update({
-                items: firebase.firestore.FieldValue.arrayUnion({
-                    description:this.state.description,
-                    assigned_to:this.state.assigned_to,
-                    due_date:this.state.due_date,
-                    completed:this.state.completed,
-                    key:this.state.key,
-                })
+            newList.push({
+                description:this.state.description,
+                assigned_to:this.state.assigned_to,
+                due_date:this.state.due_date,
+                completed:this.state.completed,
+                key:this.state.key,
             });
         }
+        const list = currentList.set({
+            items:newList,
+            name:this.props.todoList.name,
+            owner:this.props.todoList.owner,
+            last_updated:new Date().getTime(),
+        });
     }
 
     render() {
@@ -116,6 +108,7 @@ const mapStateToProps = (state,ownProps) =>{
     var currItem = items ? (key === items.length ? null :items[key] ): null;
     console.log(currItem);
     return{
+        todoList:todoList,
         id:id,
         currItem:currItem,
         itemKey:key,

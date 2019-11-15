@@ -7,11 +7,21 @@ import { firestoreConnect } from 'react-redux-firebase';
 import { getFirestore } from 'redux-firestore';
 import M from 'materialize-css';
 
+const ItemSortCriteria = {
+    SORT_BY_TASK_INCREASING: "sort_by_task_increasing",
+    SORT_BY_TASK_DECREASING: "sort_by_task_decreasing",
+    SORT_BY_DUE_DATE_INCREASING: "sort_by_due_date_increasing",
+    SORT_BY_DUE_DATE_DECREASING: "sort_by_due_date_decreasing",
+    SORT_BY_STATUS_INCREASING: "sort_by_status_increasing",
+    SORT_BY_STATUS_DECREASING: "sort_by_status_decreasing"
+};
+
 class ListScreen extends Component {
     state = {
         name: this.props.todoList.name,
         owner: this.props.todoList.owner,
         last_updated:'',
+        sortCriteria:'',
     }
 
     handleChange = (e) => {
@@ -41,6 +51,108 @@ class ListScreen extends Component {
         currentList.delete();
     }
 
+    compareTask = (item1,item2) =>{
+        if(this.state.sortCriteria === ItemSortCriteria.SORT_BY_TASK_DECREASING){
+            let temp = item1;
+            item1 = item2;
+            item2 = temp;
+        }
+        if(item1.description>item2.description){
+            return 1;
+        }
+        else if (item1.description === item2.description){
+            return 0;
+        }else{
+            return -1;
+        }
+    }
+
+    compareDate = (item1,item2) =>{
+        if(this.state.sortCriteria === ItemSortCriteria.SORT_BY_DUE_DATE_DECREASING){
+            let temp = item1;
+            item1 = item2;
+            item2 = temp;
+        }
+        if(item1.due_date>item2.due_date){
+            return 1;
+        }
+        else if (item1.due_date === item2.due_date){
+            return 0;
+        }else{
+            return -1;
+        }
+    }
+
+    compareCompleted = (item1,item2) =>{
+        if(this.state.sortCriteria === ItemSortCriteria.SORT_BY_STATUS_DECREASING){
+            let temp = item1;
+            item1 = item2;
+            item2 = temp;
+        }
+        if(item1.completed>item2.completed){
+            return 1;
+        }
+        else if (item1.completed === item2.completed){
+            return 0;
+        }else{
+            return -1;
+        }
+    }
+
+    sortTask = () =>{
+        if(this.state.sortCriteria === ItemSortCriteria.SORT_BY_TASK_INCREASING){
+            this.setState(()=>({
+                sortCriteria:ItemSortCriteria.SORT_BY_TASK_DECREASING
+            }));
+        }else{
+            this.setState(()=>({
+                sortCriteria:ItemSortCriteria.SORT_BY_TASK_INCREASING
+            })); 
+        }
+        let sortedList = this.props.todoList.items.sort(this.compareTask);
+        const firestore = getFirestore();
+        let currentList = firestore.collection('todoLists').doc(this.props.todoList.id);
+        let newList = currentList.update({
+            items:sortedList
+        });
+    }
+
+    sortDate = () =>{
+        if(this.state.sortCriteria === ItemSortCriteria.SORT_BY_DUE_DATE_INCREASING){
+            this.setState(()=>({
+                sortCriteria:ItemSortCriteria.SORT_BY_DUE_DATE_DECREASING
+            }));
+        }else{
+            this.setState(()=>({
+                sortCriteria:ItemSortCriteria.SORT_BY_DUE_DATE_INCREASING
+            })); 
+        }
+        let sortedList = this.props.todoList.items.sort(this.compareDate);
+        const firestore = getFirestore();
+        let currentList = firestore.collection('todoLists').doc(this.props.todoList.id);
+        let newList = currentList.update({
+            items:sortedList
+        });
+    }
+
+    sortCompleted = () =>{
+        if(this.state.sortCriteria === ItemSortCriteria.SORT_BY_STATUS_INCREASING){
+            this.setState(()=>({
+                sortCriteria:ItemSortCriteria.SORT_BY_STATUS_DECREASING
+            }));
+        }else{
+            this.setState(()=>({
+                sortCriteria:ItemSortCriteria.SORT_BY_STATUS_INCREASING
+            })); 
+        }
+        let sortedList = this.props.todoList.items.sort(this.compareCompleted);
+        const firestore = getFirestore();
+        let currentList = firestore.collection('todoLists').doc(this.props.todoList.id);
+        let newList = currentList.update({
+            items:sortedList
+        });
+    }
+
     render() {
         const auth = this.props.auth;
         const todoList = this.props.todoList;
@@ -65,9 +177,9 @@ class ListScreen extends Component {
                     <input type="text" name="owner" id="owner" onChange={this.handleChange} value={todoList.owner} />
                 </div>
                 <div className="header yellow darken-2 row">
-                    <div className="col s4 hoverable">Task</div>
-                    <div className="col s3 hoverable">Due Date</div>
-                    <div className="col s3 hoverable">Status</div>
+                    <div className="col s4 hoverable" onClick={this.sortTask}>Task</div>
+                    <div className="col s3 hoverable" onClick={this.sortDate}>Due Date</div>
+                    <div className="col s3 hoverable" onClick={this.sortCompleted}>Status</div>
                 </div>
                 <ItemsList todoList={todoList} />
                 <div id="modal1" className="modal">
